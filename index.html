@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Nepali Typing Fight</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #0f0f0f, #1c1c1c);
+    color: #f0f0f0;
+    text-align: center;
+    margin: 0;
+    padding-top: 40px;
+    min-height: 100vh;
+  }
+  h1 { font-size: 2em; margin-bottom: 5px; }
+  p.sub { opacity: 0.8; }
+  #arena {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 0 40px;
+  }
+  .fighter { font-size: 5em; transition: transform 0.15s; }
+  #player.punch { transform: translateX(30px) rotate(-10deg); }
+  #enemy.hit { transform: translateX(-20px); filter: brightness(2); }
+  .bars { max-width: 500px; margin: 0 auto; }
+  .barBox {
+    background: #333;
+    border-radius: 10px;
+    height: 20px;
+    width: 100%;
+    margin-bottom: 15px;
+    overflow: hidden;
+  }
+  .barFill {
+    height: 100%;
+    background: #38ef7d;
+    width: 100%;
+    transition: width 0.2s;
+  }
+  #challenge { margin-top: 30px; font-size: 3.5em; }
+  #keyHint { font-size: 1.3em; color: #f7b733; margin-top: 10px; }
+  #status { margin-top: 15px; font-size: 1.2em; min-height: 30px; }
+  #score { margin-top: 10px; opacity: 0.8; }
+  #shakeBox.shake { animation: shakeAnim 0.2s; }
+  @keyframes shakeAnim {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+    100% { transform: translateX(0); }
+  }
+</style>
+</head>
+<body>
+
+<h1>🥊 Nepali Typing Fight</h1>
+<p class="sub">Standard Preeti keyboard layout — press the shown key to punch</p>
+
+<div class="bars">
+  <div class="barBox"><div class="barFill" id="enemyBar"></div></div>
+</div>
+
+<div id="arena">
+  <div class="fighter" id="player">🧍</div>
+  <div class="fighter" id="enemy">👹</div>
+</div>
+
+<div id="shakeBox">
+  <div id="challenge">क</div>
+  <div id="keyHint">Press: S</div>
+</div>
+
+<div id="status">Get ready...</div>
+<div id="score">Score: 0</div>
+
+<script>
+  const letters = [
+    { char: "क", key: "s" },
+    { char: "ग", key: "u" },
+    { char: "च", key: "r" },
+    { char: "ज", key: "h" },
+    { char: "त", key: "t" },
+    { char: "द", key: "b" },
+    { char: "न", key: "g" },
+    { char: "प", key: "k" },
+    { char: "ब", key: "a" },
+    { char: "म", key: "d" },
+    { char: "र", key: "/" },
+    { char: "ल", key: "n" },
+    { char: "स", key: ";" },
+    { char: "ह", key: "x" }
+  ];
+
+  let current = null;
+  let score = 0;
+  let enemyHealth = 100;
+  const damagePerHit = 10;
+
+  function newChallenge() {
+    current = letters[Math.floor(Math.random() * letters.length)];
+    document.getElementById('challenge').innerText = current.char;
+    document.getElementById('keyHint').innerText = "Press: " + current.key.toUpperCase();
+  }
+
+  function punch() {
+    document.getElementById('player').classList.add('punch');
+    document.getElementById('enemy').classList.add('hit');
+    setTimeout(() => {
+      document.getElementById('player').classList.remove('punch');
+      document.getElementById('enemy').classList.remove('hit');
+    }, 150);
+  }
+
+  function shake() {
+    document.getElementById('shakeBox').classList.add('shake');
+    setTimeout(() => document.getElementById('shakeBox').classList.remove('shake'), 200);
+  }
+
+  function updateHealthBar() {
+    document.getElementById('enemyBar').style.width = enemyHealth + "%";
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (!current) return;
+    const pressed = e.key.toLowerCase();
+
+    if (pressed === current.key) {
+      punch();
+      score++;
+      enemyHealth -= damagePerHit;
+      document.getElementById('score').innerText = "Score: " + score;
+      document.getElementById('status').innerText = "Hit! 💥";
+
+      if (enemyHealth <= 0) {
+        enemyHealth = 0;
+        updateHealthBar();
+        document.getElementById('status').innerText = "🎉 You defeated the enemy! Final Score: " + score;
+        document.getElementById('challenge').innerText = "🏆";
+        document.getElementById('keyHint').innerText = "";
+        current = null;
+        return;
+      }
+      updateHealthBar();
+      newChallenge();
+    } else {
+      shake();
+      document.getElementById('status').innerText = "Wrong key, try again!";
+    }
+  });
+
+  newChallenge();
+  updateHealthBar();
+  document.getElementById('status').innerText = "Fight!";
+</script>
+
+</body>
+</html>
