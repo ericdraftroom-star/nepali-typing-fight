@@ -9,42 +9,36 @@
     color: #f0f0f0;
     text-align: center;
     margin: 0;
-    padding-top: 30px;
+    padding-top: 20px;
     min-height: 100vh;
+    overflow-x: hidden;
   }
-  h1 { font-size: 1.8em; margin-bottom: 5px; }
-  p.sub { opacity: 0.7; font-size: 0.9em; margin-top: 0; }
+  h1 { font-size: 1.7em; margin-bottom: 2px; }
+  p.sub { opacity: 0.7; font-size: 0.85em; margin-top: 0; }
 
-  .bars { max-width: 500px; margin: 20px auto; }
-  .barBox {
-    background: #333;
-    border-radius: 10px;
-    height: 16px;
-    width: 100%;
-    overflow: hidden;
+  #hud {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 10px 0;
+    font-size: 1em;
   }
-  .barFill {
-    height: 100%;
-    background: #38ef7d;
-    width: 100%;
-    transition: width 0.2s;
-  }
+  #lives { color: #e24b4a; }
+  #scoreDisplay { color: #38ef7d; }
 
   #arena {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    max-width: 600px;
-    height: 180px;
-    margin: 20px auto;
-    padding: 0 60px;
+    position: relative;
+    max-width: 650px;
+    height: 200px;
+    margin: 10px auto;
+    border-bottom: 3px solid #444;
   }
 
   .stick {
     width: 60px;
     height: 140px;
-    position: relative;
-    transition: transform 0.18s;
+    position: absolute;
+    bottom: 0;
   }
   .stick .head {
     width: 30px;
@@ -54,7 +48,6 @@
     position: absolute;
     top: 0;
     left: 15px;
-    transition: filter 0.15s;
   }
   .stick .body {
     width: 4px;
@@ -72,7 +65,6 @@
     top: 38px;
     left: 28px;
     transform-origin: top center;
-    transition: transform 0.15s;
   }
   .stick .armL { transform: rotate(35deg); }
   .stick .armR { transform: rotate(-35deg); }
@@ -88,45 +80,58 @@
   .stick .legL { transform: rotate(20deg); }
   .stick .legR { transform: rotate(-20deg); }
 
+  #hero { right: 10px; }
+
   #enemy .head { border-color: #e24b4a; }
   #enemy .body { background: #e24b4a; }
   #enemy .armL { background: #e24b4a; }
   #enemy .armR { background: #e24b4a; }
   #enemy .legL { background: #e24b4a; }
   #enemy .legR { background: #e24b4a; }
+  #enemy { left: 0px; transition: left 0.05s linear; }
 
-  #player.punch { transform: translateX(35px); }
-  #player.punch .armR { transform: rotate(-95deg); }
-
-  #enemy.hit { transform: translateX(-30px) rotate(8deg); }
-  #enemy.hit .head { filter: brightness(2.5); }
-  #enemy.hit .armL { transform: rotate(120deg); }
-  #enemy.hit .armR { transform: rotate(-120deg); }
-
-  #challengeBox {
-    margin: 25px auto;
-    display: inline-flex;
-    align-items: center;
-    gap: 16px;
+  #wordBox {
+    position: absolute;
+    top: -38px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+    white-space: nowrap;
+  }
+  .letterTile {
     background: #1e1e1e;
     border: 2px solid #f7b733;
-    border-radius: 20px;
-    padding: 18px 30px;
-  }
-  #challenge {
-    font-size: 3em;
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 1.3em;
     font-weight: bold;
     color: #fff;
-    text-shadow: 0 0 15px #f7b733;
+    transition: opacity 0.15s, transform 0.15s;
   }
-  #keyHint {
-    font-size: 0.85em;
-    color: #aaa;
-    border: 1px solid #555;
-    border-radius: 6px;
-    padding: 4px 10px;
+  .letterTile.done {
+    opacity: 0;
+    transform: scale(0.3);
   }
-  #keyHint b { color: #f7b733; }
+
+  @keyframes punchMove {
+    0%   { transform: translateX(0); }
+    35%  { transform: translateX(45px); }
+    100% { transform: translateX(0); }
+  }
+  @keyframes punchArm {
+    0%   { transform: rotate(-35deg); }
+    35%  { transform: rotate(-175deg); }
+    100% { transform: rotate(-35deg); }
+  }
+  #hero.punch { animation: punchMove 0.4s ease-out; }
+  #hero.punch .armR { animation: punchArm 0.4s ease-out; }
+
+  @keyframes flyOff {
+    0%   { transform: translateX(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateX(250px) rotate(60deg); opacity: 0; }
+  }
+  #enemy.dead { animation: flyOff 0.4s ease-in forwards; }
 
   #shakeBox.shake { animation: shakeAnim 0.2s; }
   @keyframes shakeAnim {
@@ -136,21 +141,28 @@
     100% { transform: translateX(0); }
   }
 
-  #status { margin-top: 10px; font-size: 1.1em; min-height: 28px; }
-  #score { margin-top: 5px; opacity: 0.7; font-size: 0.9em; }
+  #status { margin-top: 15px; font-size: 1.1em; min-height: 28px; }
+  #keyGuide {
+    margin-top: 5px;
+    font-size: 0.85em;
+    color: #aaa;
+  }
+  #keyGuide b { color: #f7b733; }
 </style>
 </head>
 <body>
 
 <h1>Nepali Typing Fight</h1>
-<p class="sub">Preeti keyboard layout - press the key shown to punch</p>
+<p class="sub">Preeti keyboard layout - type the keys in order before the enemy reaches you</p>
 
-<div class="bars">
-  <div class="barBox"><div class="barFill" id="enemyBar"></div></div>
+<div id="hud">
+  <div id="lives">Lives: ❤️❤️❤️</div>
+  <div id="scoreDisplay">Score: 0</div>
 </div>
 
+<div id="shakeBox">
 <div id="arena">
-  <div class="stick" id="player">
+  <div class="stick" id="hero">
     <div class="head"></div>
     <div class="body"></div>
     <div class="armL"></div>
@@ -159,6 +171,7 @@
     <div class="legR"></div>
   </div>
   <div class="stick" id="enemy">
+    <div id="wordBox"></div>
     <div class="head"></div>
     <div class="body"></div>
     <div class="armL"></div>
@@ -167,19 +180,13 @@
     <div class="legR"></div>
   </div>
 </div>
-
-<div id="shakeBox">
-  <div id="challengeBox">
-    <div id="challenge">क</div>
-    <div id="keyHint">key: <b>S</b></div>
-  </div>
 </div>
 
 <div id="status">Get ready...</div>
-<div id="score">Score: 0</div>
+<div id="keyGuide"></div>
 
 <script>
-  const letters = [
+  const letterBank = [
     { char: "क", key: "s" },
     { char: "ग", key: "u" },
     { char: "च", key: "r" },
@@ -196,24 +203,52 @@
     { char: "ह", key: "x" }
   ];
 
-  let current = null;
-  let score = 0;
-  let enemyHealth = 100;
-  const damagePerHit = 10;
+  const heroX = 590;
+  const enemyStartX = 0;
+  const enemySpeed = 0.7;
 
-  function newChallenge() {
-    current = letters[Math.floor(Math.random() * letters.length)];
-    document.getElementById('challenge').innerText = current.char;
-    document.getElementById('keyHint').innerHTML = "key: <b>" + current.key.toUpperCase() + "</b>";
+  let currentWord = [];
+  let typedIndex = 0;
+  let enemyX = enemyStartX;
+  let lives = 3;
+  let score = 0;
+  let gameOver = false;
+  let paused = false;
+  let animFrame = null;
+
+  function randomWord() {
+    const len = 2 + Math.floor(Math.random() * 3);
+    const word = [];
+    for (let i = 0; i < len; i++) {
+      word.push(letterBank[Math.floor(Math.random() * letterBank.length)]);
+    }
+    return word;
   }
 
-  function punch() {
-    document.getElementById('player').classList.add('punch');
-    document.getElementById('enemy').classList.add('hit');
-    setTimeout(() => {
-      document.getElementById('player').classList.remove('punch');
-      document.getElementById('enemy').classList.remove('hit');
-    }, 180);
+  function renderWord() {
+    const box = document.getElementById('wordBox');
+    box.innerHTML = '';
+    currentWord.forEach((item, i) => {
+      const tile = document.createElement('div');
+      tile.className = 'letterTile' + (i < typedIndex ? ' done' : '');
+      tile.innerText = item.char;
+      box.appendChild(tile);
+    });
+    const guide = currentWord.map(l => l.key.toUpperCase()).join(' ');
+    document.getElementById('keyGuide').innerHTML = "keys: <b>" + guide + "</b>";
+  }
+
+  function newEnemy() {
+    currentWord = randomWord();
+    typedIndex = 0;
+    enemyX = enemyStartX;
+    document.getElementById('enemy').style.left = enemyX + 'px';
+    document.getElementById('enemy').classList.remove('dead');
+    renderWord();
+  }
+
+  function updateLives() {
+    document.getElementById('lives').innerText = 'Lives: ' + '❤️'.repeat(lives);
   }
 
   function shake() {
@@ -221,41 +256,77 @@
     setTimeout(() => document.getElementById('shakeBox').classList.remove('shake'), 200);
   }
 
-  function updateHealthBar() {
-    document.getElementById('enemyBar').style.width = enemyHealth + "%";
+  function heroPunch() {
+    document.getElementById('hero').classList.add('punch');
+    setTimeout(() => document.getElementById('hero').classList.remove('punch'), 400);
+  }
+
+  function enemyDefeated() {
+    paused = true;
+    document.getElementById('enemy').classList.add('dead');
+    heroPunch();
+    score += 10;
+    document.getElementById('scoreDisplay').innerText = 'Score: ' + score;
+    document.getElementById('status').innerText = 'Defeated!';
+    setTimeout(() => {
+      if (gameOver) return;
+      paused = false;
+      newEnemy();
+      document.getElementById('status').innerText = 'Fight!';
+    }, 500);
+  }
+
+  function loseLife() {
+    paused = true;
+    lives--;
+    updateLives();
+    shake();
+    if (lives <= 0) {
+      gameOver = true;
+      document.getElementById('status').innerText = 'Game Over! Final Score: ' + score;
+      document.getElementById('keyGuide').innerText = '';
+      return;
+    }
+    document.getElementById('status').innerText = 'Enemy got through!';
+    setTimeout(() => {
+      paused = false;
+      newEnemy();
+      document.getElementById('status').innerText = 'Fight!';
+    }, 700);
+  }
+
+  function gameLoop() {
+    if (!paused && !gameOver) {
+      enemyX += enemySpeed;
+      document.getElementById('enemy').style.left = enemyX + 'px';
+      if (enemyX >= heroX) {
+        loseLife();
+      }
+    }
+    animFrame = requestAnimationFrame(gameLoop);
   }
 
   document.addEventListener('keydown', (e) => {
-    if (!current) return;
+    if (gameOver || paused) return;
     const pressed = e.key.toLowerCase();
+    const expected = currentWord[typedIndex];
+    if (!expected) return;
 
-    if (pressed === current.key) {
-      punch();
-      score++;
-      enemyHealth -= damagePerHit;
-      document.getElementById('score').innerText = "Score: " + score;
-      document.getElementById('status').innerText = "Hit!";
-
-      if (enemyHealth <= 0) {
-        enemyHealth = 0;
-        updateHealthBar();
-        document.getElementById('status').innerText = "You defeated the enemy! Final Score: " + score;
-        document.getElementById('challenge').innerText = "WIN";
-        document.getElementById('keyHint').innerText = "";
-        current = null;
-        return;
+    if (pressed === expected.key) {
+      typedIndex++;
+      renderWord();
+      if (typedIndex >= currentWord.length) {
+        enemyDefeated();
       }
-      updateHealthBar();
-      newChallenge();
     } else {
       shake();
-      document.getElementById('status').innerText = "Wrong key, try again";
     }
   });
 
-  newChallenge();
-  updateHealthBar();
-  document.getElementById('status').innerText = "Fight!";
+  updateLives();
+  newEnemy();
+  document.getElementById('status').innerText = 'Fight!';
+  gameLoop();
 </script>
 
 </body>
