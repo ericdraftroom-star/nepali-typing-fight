@@ -44,7 +44,7 @@
     width: 60px;
     height: 140px;
     position: relative;
-    transition: transform 0.15s;
+    transition: transform 0.18s;
   }
   .stick .head {
     width: 30px;
@@ -54,6 +54,7 @@
     position: absolute;
     top: 0;
     left: 15px;
+    transition: transform 0.15s;
   }
   .stick .body {
     width: 4px;
@@ -69,30 +70,39 @@
     background: #f0f0f0;
     position: absolute;
     top: 38px;
+    left: 28px;
     transform-origin: top center;
+    transition: transform 0.15s;
   }
-  .stick .armL { left: 28px; transform: rotate(35deg); }
-  .stick .armR { left: 28px; transform: rotate(-35deg); }
+  .stick .armL { transform: rotate(35deg); }
+  .stick .armR { transform: rotate(-35deg); }
   .stick .legL, .stick .legR {
     width: 4px;
     height: 40px;
     background: #f0f0f0;
     position: absolute;
     top: 75px;
+    left: 28px;
     transform-origin: top center;
+    transition: transform 0.15s;
   }
-  .stick .legL { left: 28px; transform: rotate(20deg); }
-  .stick .legR { left: 28px; transform: rotate(-20deg); }
+  .stick .legL { transform: rotate(20deg); }
+  .stick .legR { transform: rotate(-20deg); }
 
-  #enemyStick .head, #enemyStick .body, #enemyStick .armL, #enemyStick .armR {
-    border-color: #e24b4a;
+  #enemy .head { border-color: #e24b4a; }
+  #enemy .body, #enemy .armL, #enemy .armR, #enemy .legL, #enemy .legR {
     background: #e24b4a;
   }
 
-  #player.punch { transform: translateX(20px); }
-  #player.punch .armR { transform: rotate(-100deg); }
-  #enemy.hit { transform: translateX(-15px); }
-  #enemy.hit .head { filter: brightness(2); }
+  #player.punch { transform: translateX(35px); }
+  #player.punch .armR { transform: rotate(-95deg) translateY(-5px); }
+  #player.punch .legL { transform: rotate(35deg); }
+  #player.punch .legR { transform: rotate(-5deg); }
+
+  #enemy.hit { transform: translateX(-30px) rotate(8deg); }
+  #enemy.hit .head { filter: brightness(2.5); }
+  #enemy.hit .armL { transform: rotate(120deg); }
+  #enemy.hit .armR { transform: rotate(-120deg); }
 
   #challengeBox {
     margin: 25px auto;
@@ -204,7 +214,7 @@
     setTimeout(() => {
       document.getElementById('player').classList.remove('punch');
       document.getElementById('enemy').classList.remove('hit');
-    }, 150);
+    }, 180);
   }
 
   function shake() {
