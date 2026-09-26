@@ -54,7 +54,7 @@
     position: absolute;
     top: 0;
     left: 15px;
-    transition: transform 0.15s;
+    transition: filter 0.15s;
   }
   .stick .body {
     width: 4px;
@@ -84,20 +84,19 @@
     top: 75px;
     left: 28px;
     transform-origin: top center;
-    transition: transform 0.15s;
   }
   .stick .legL { transform: rotate(20deg); }
   .stick .legR { transform: rotate(-20deg); }
 
   #enemy .head { border-color: #e24b4a; }
-  #enemy .body, #enemy .armL, #enemy .armR, #enemy .legL, #enemy .legR {
-    background: #e24b4a;
-  }
+  #enemy .body { background: #e24b4a; }
+  #enemy .armL { background: #e24b4a; }
+  #enemy .armR { background: #e24b4a; }
+  #enemy .legL { background: #e24b4a; }
+  #enemy .legR { background: #e24b4a; }
 
   #player.punch { transform: translateX(35px); }
-  #player.punch .armR { transform: rotate(-95deg) translateY(-5px); }
-  #player.punch .legL { transform: rotate(35deg); }
-  #player.punch .legR { transform: rotate(-5deg); }
+  #player.punch .armR { transform: rotate(-95deg); }
 
   #enemy.hit { transform: translateX(-30px) rotate(8deg); }
   #enemy.hit .head { filter: brightness(2.5); }
