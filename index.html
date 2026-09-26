@@ -9,29 +9,18 @@
     color: #f0f0f0;
     text-align: center;
     margin: 0;
-    padding-top: 40px;
+    padding-top: 30px;
     min-height: 100vh;
   }
-  h1 { font-size: 2em; margin-bottom: 5px; }
-  p.sub { opacity: 0.8; }
-  #arena {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 600px;
-    margin: 40px auto;
-    padding: 0 40px;
-  }
-  .fighter { font-size: 5em; transition: transform 0.15s; }
-  #player.punch { transform: translateX(30px) rotate(-10deg); }
-  #enemy.hit { transform: translateX(-20px); filter: brightness(2); }
-  .bars { max-width: 500px; margin: 0 auto; }
+  h1 { font-size: 1.8em; margin-bottom: 5px; }
+  p.sub { opacity: 0.7; font-size: 0.9em; margin-top: 0; }
+
+  .bars { max-width: 500px; margin: 20px auto; }
   .barBox {
     background: #333;
     border-radius: 10px;
-    height: 20px;
+    height: 16px;
     width: 100%;
-    margin-bottom: 15px;
     overflow: hidden;
   }
   .barFill {
@@ -40,10 +29,96 @@
     width: 100%;
     transition: width 0.2s;
   }
-  #challenge { margin-top: 30px; font-size: 3.5em; }
-  #keyHint { font-size: 1.3em; color: #f7b733; margin-top: 10px; }
-  #status { margin-top: 15px; font-size: 1.2em; min-height: 30px; }
-  #score { margin-top: 10px; opacity: 0.8; }
+
+  #arena {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    max-width: 600px;
+    height: 180px;
+    margin: 20px auto;
+    padding: 0 60px;
+  }
+
+  .stick {
+    width: 60px;
+    height: 140px;
+    position: relative;
+    transition: transform 0.15s;
+  }
+  .stick .head {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 4px solid #f0f0f0;
+    position: absolute;
+    top: 0;
+    left: 15px;
+  }
+  .stick .body {
+    width: 4px;
+    height: 45px;
+    background: #f0f0f0;
+    position: absolute;
+    top: 30px;
+    left: 28px;
+  }
+  .stick .armL, .stick .armR {
+    width: 4px;
+    height: 35px;
+    background: #f0f0f0;
+    position: absolute;
+    top: 38px;
+    transform-origin: top center;
+  }
+  .stick .armL { left: 28px; transform: rotate(35deg); }
+  .stick .armR { left: 28px; transform: rotate(-35deg); }
+  .stick .legL, .stick .legR {
+    width: 4px;
+    height: 40px;
+    background: #f0f0f0;
+    position: absolute;
+    top: 75px;
+    transform-origin: top center;
+  }
+  .stick .legL { left: 28px; transform: rotate(20deg); }
+  .stick .legR { left: 28px; transform: rotate(-20deg); }
+
+  #enemyStick .head, #enemyStick .body, #enemyStick .armL, #enemyStick .armR {
+    border-color: #e24b4a;
+    background: #e24b4a;
+  }
+
+  #player.punch { transform: translateX(20px); }
+  #player.punch .armR { transform: rotate(-100deg); }
+  #enemy.hit { transform: translateX(-15px); }
+  #enemy.hit .head { filter: brightness(2); }
+
+  #challengeBox {
+    margin: 25px auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    background: #1e1e1e;
+    border: 2px solid #f7b733;
+    border-radius: 20px;
+    padding: 18px 30px;
+  }
+  #challenge {
+    font-size: 3em;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0 0 15px #f7b733;
+  }
+  #keyHint {
+    font-size: 0.85em;
+    color: #aaa;
+    border: 1px solid #555;
+    border-radius: 6px;
+    padding: 4px 10px;
+  }
+  #keyHint b { color: #f7b733; }
+
   #shakeBox.shake { animation: shakeAnim 0.2s; }
   @keyframes shakeAnim {
     0% { transform: translateX(0); }
@@ -51,25 +126,44 @@
     75% { transform: translateX(8px); }
     100% { transform: translateX(0); }
   }
+
+  #status { margin-top: 10px; font-size: 1.1em; min-height: 28px; }
+  #score { margin-top: 5px; opacity: 0.7; font-size: 0.9em; }
 </style>
 </head>
 <body>
 
-<h1>🥊 Nepali Typing Fight</h1>
-<p class="sub">Standard Preeti keyboard layout — press the shown key to punch</p>
+<h1>Nepali Typing Fight</h1>
+<p class="sub">Preeti keyboard layout - press the key shown to punch</p>
 
 <div class="bars">
   <div class="barBox"><div class="barFill" id="enemyBar"></div></div>
 </div>
 
 <div id="arena">
-  <div class="fighter" id="player">🧍</div>
-  <div class="fighter" id="enemy">👹</div>
+  <div class="stick" id="player">
+    <div class="head"></div>
+    <div class="body"></div>
+    <div class="armL"></div>
+    <div class="armR"></div>
+    <div class="legL"></div>
+    <div class="legR"></div>
+  </div>
+  <div class="stick" id="enemy">
+    <div class="head"></div>
+    <div class="body"></div>
+    <div class="armL"></div>
+    <div class="armR"></div>
+    <div class="legL"></div>
+    <div class="legR"></div>
+  </div>
 </div>
 
 <div id="shakeBox">
-  <div id="challenge">क</div>
-  <div id="keyHint">Press: S</div>
+  <div id="challengeBox">
+    <div id="challenge">क</div>
+    <div id="keyHint">key: <b>S</b></div>
+  </div>
 </div>
 
 <div id="status">Get ready...</div>
@@ -101,7 +195,7 @@
   function newChallenge() {
     current = letters[Math.floor(Math.random() * letters.length)];
     document.getElementById('challenge').innerText = current.char;
-    document.getElementById('keyHint').innerText = "Press: " + current.key.toUpperCase();
+    document.getElementById('keyHint').innerHTML = "key: <b>" + current.key.toUpperCase() + "</b>";
   }
 
   function punch() {
@@ -131,13 +225,13 @@
       score++;
       enemyHealth -= damagePerHit;
       document.getElementById('score').innerText = "Score: " + score;
-      document.getElementById('status').innerText = "Hit! 💥";
+      document.getElementById('status').innerText = "Hit!";
 
       if (enemyHealth <= 0) {
         enemyHealth = 0;
         updateHealthBar();
-        document.getElementById('status').innerText = "🎉 You defeated the enemy! Final Score: " + score;
-        document.getElementById('challenge').innerText = "🏆";
+        document.getElementById('status').innerText = "You defeated the enemy! Final Score: " + score;
+        document.getElementById('challenge').innerText = "WIN";
         document.getElementById('keyHint').innerText = "";
         current = null;
         return;
@@ -146,7 +240,7 @@
       newChallenge();
     } else {
       shake();
-      document.getElementById('status').innerText = "Wrong key, try again!";
+      document.getElementById('status').innerText = "Wrong key, try again";
     }
   });
 
